@@ -42,6 +42,6 @@ app.MapControllers();
 
 var apiV1 =  app.MapGroup("/api/v1");
 
-apiV1.MapGroup("users").MapUsers();
+apiV1.MapGroup("users").MapUsers().WithTags("Users");
 
 app.Run();

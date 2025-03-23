@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using System.Reflection.Emit;
 using WebAPI.Domain.Users;
+using WebAPI.Domain.Users.Entities;
 
 namespace WebAPI.Infrastructure.Common
 {
@@ -13,6 +13,8 @@ namespace WebAPI.Infrastructure.Common
 
 
         }
+
+        public DbSet<RefreshToken> RefreshTokens { get; set; } 
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);

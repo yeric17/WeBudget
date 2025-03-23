@@ -15,8 +15,10 @@ using System.Reflection;
 using System.Text;
 using WebAPI.Application.Behaviors;
 using WebAPI.Domain.Users;
+using WebAPI.Domain.Users.Interfaces;
 using WebAPI.Infrastructure.Auth;
 using WebAPI.Infrastructure.Common;
+using WebAPI.Infrastructure.Users;
 
 namespace WebAPI.Infrastructure
 {
@@ -35,7 +37,8 @@ namespace WebAPI.Infrastructure
                 .AddInteractionService();
 
 
-            services.AddScoped<ITokenGenerator, TokenGenerator>();            
+            services.AddScoped<ITokenGenerator, TokenGenerator>();
+            services.AddScoped<IUsersRepository, UsersRepository>();
 
             return services;
         }
@@ -88,6 +91,7 @@ namespace WebAPI.Infrastructure
             services.Configure<AuthenticationSettings>(configuration.GetSection("AuthenticationSettings"));
 
             services.AddIdentityCore<User>()
+                .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
 

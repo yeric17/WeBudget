@@ -57,6 +57,8 @@ namespace WebAPI.Application.Users
                 return errors;
             }
 
+            await userManager.AddToRoleAsync(userStored, "User");
+
 
             return Result.Success();
         }
