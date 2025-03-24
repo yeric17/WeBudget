@@ -7,5 +7,6 @@ namespace WebAPI.Domain.Users.Interfaces
     {
         Task<Result> AddRefreshToken(RefreshToken refreshToken);
         Task<Result<RefreshToken>> GetRefreshToken(string refreshToken);
+        Task<Result<User>> GetUserById(string userId);
     }
 }

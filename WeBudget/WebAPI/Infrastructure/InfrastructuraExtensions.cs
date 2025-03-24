@@ -2,6 +2,7 @@
 using FluentValidation;
 using Infrastructure.Auth;
 using MediatR;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -39,6 +40,8 @@ namespace WebAPI.Infrastructure
 
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IUsersRepository, UsersRepository>();
+            services.AddScoped<IClaimsHelper, ClaimsHelper>();
+            services.AddScoped<IClaimsTransformation, CustomClaimsTransformation>();
 
             return services;
         }

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WebAPI.Domain.Users;
 using WebAPI.Domain.Users.Entities;
 using WebAPI.Domain.Users.Interfaces;
 using WebAPI.Infrastructure.Common;
@@ -45,6 +46,16 @@ namespace WebAPI.Infrastructure.Users
                 return UserErrors.DatabasUnhandeledError;
             }
          
+        }
+
+        public async Task<Result<User>> GetUserById(string userId)
+        {
+            User? user = await _dbContext.Users.FindAsync(userId);
+            if (user is null)
+            {
+                return UserErrors.UserNotFound;
+            }
+            return user;
         }
     }
 }
