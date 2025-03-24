@@ -62,7 +62,7 @@ namespace WebAPI.Application.Users
             if (result.IsFailure)
             {
                 _logger.LogError($"The refresh token for the user {request.Email} could not be saved");
-                return UserErrors.UserUnauthorized;
+                return result.Error;
             }
 
             return new UserLoginCommandResponse

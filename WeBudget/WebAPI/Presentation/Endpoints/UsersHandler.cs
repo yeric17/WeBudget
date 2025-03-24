@@ -13,6 +13,7 @@ namespace WebAPI.Presentation.Endpoints
             routes.MapPost("/register", Register).WithDescription("Register User");
             routes.MapPost("/login", Login).WithDescription("Login");
             routes.MapGet("/me", Me).RequireAuthorization().WithDescription("Get current user");
+            routes.MapPost("/refresh-token", RefreshToken).WithDescription("Refresh token");
             return routes;
         }
 
@@ -48,6 +49,16 @@ namespace WebAPI.Presentation.Endpoints
 
             var result = await sender.Send(new UserGetByIdQuery { UserId = userId});
 
+            if (result.IsFailure)
+            {
+                return ProblemDetailsHelper.HandleFailure(result);
+            }
+            return Results.Ok(result.Value);
+        }
+
+        public static async Task<IResult> RefreshToken([FromServices] ISender sender, [FromBody] RefreshTokenGetQuery request)
+        {
+            var result = await sender.Send(request);
             if (result.IsFailure)
             {
                 return ProblemDetailsHelper.HandleFailure(result);

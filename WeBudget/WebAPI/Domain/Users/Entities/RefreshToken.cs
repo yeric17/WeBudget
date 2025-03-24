@@ -14,16 +14,17 @@ namespace WebAPI.Domain.Users.Entities
         public string Token { get; private set; } = string.Empty;
         public DateTimeOffset Expires { get; private set; }
         public bool IsExpired => DateTimeOffset.UtcNow >= Expires;
-        public bool IsActive => !IsExpired;
+        public bool IsActive => !IsExpired && Enabled;
 
+        public bool Enabled { get; private set; } = true;
 
-       
         public static RefreshToken Create( string token,string userId)
         {
             RefreshToken refreshToken = new();
             refreshToken.RefreshTokenId = Guid.NewGuid().ToString();
             refreshToken.UserId = userId;
             refreshToken.Token = token;
+            refreshToken.Enabled = true;
             return refreshToken;
         }
 
@@ -37,6 +38,10 @@ namespace WebAPI.Domain.Users.Entities
             return this;
         }
 
-        
+        public RefreshToken Disable()
+        {
+            Enabled = false;
+            return this;
+        }
     }
 }

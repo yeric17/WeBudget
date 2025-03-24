@@ -29,6 +29,22 @@ namespace WebAPI.Infrastructure.Users
             return token;
         }
 
+        public async Task<Result> DisableRefreshToken(RefreshToken refreshToken)
+        {
+            refreshToken.Disable();
+            _dbContext.RefreshTokens.Update(refreshToken);
+            try
+            {
+                await _dbContext.SaveChangesAsync();
+                return Result.Success();
+            }
+            catch (Exception exc)
+            {
+                _logger.LogError(exc, "Error while disabling refresh token in database");
+                return UserErrors.DatabasUnhandeledError;
+            }
+        }
+
         public async Task<Result> AddRefreshToken(RefreshToken refreshToken)
         {
             await _dbContext.RefreshTokens.AddAsync(refreshToken);
