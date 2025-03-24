@@ -60,6 +60,15 @@ namespace WebAPI.Application.Users
             await userManager.AddToRoleAsync(userStored, "User");
 
 
+            string token = await userManager.GenerateEmailConfirmationTokenAsync(userStored);
+
+            string confirmationLink = $"https://localhost:7112/confirm-email?email={request.Email}&token={token}";
+
+            IEmailSender<User> emailSender = _serviceProvider.GetRequiredService<IEmailSender<User>>();
+
+            await emailSender.SendConfirmationLinkAsync(userStored, request.Email, confirmationLink);
+
+
             return Result.Success();
         }
     }

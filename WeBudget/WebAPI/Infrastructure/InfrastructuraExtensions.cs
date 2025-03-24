@@ -19,6 +19,7 @@ using WebAPI.Domain.Users;
 using WebAPI.Domain.Users.Interfaces;
 using WebAPI.Infrastructure.Auth;
 using WebAPI.Infrastructure.Common;
+using WebAPI.Infrastructure.Email;
 using WebAPI.Infrastructure.Users;
 
 namespace WebAPI.Infrastructure
@@ -35,7 +36,8 @@ namespace WebAPI.Infrastructure
             services
                 .AddDatabase(configuration)
                 .AddIdentityServices(configuration)
-                .AddInteractionService();
+                .AddInteractionService()
+                .AddEmailService(configuration);
 
 
             services.AddScoped<ITokenGenerator, TokenGenerator>();
@@ -79,8 +81,8 @@ namespace WebAPI.Infrastructure
             //make ping to database to check connection
             using (var context = services.BuildServiceProvider().GetService<ApplicationDbContext>())
             {
-                context.Database.OpenConnection();
-                context.Database.CloseConnection();
+                context?.Database.OpenConnection();
+                context?.Database.CloseConnection();
             }
 
             return services;
@@ -104,7 +106,7 @@ namespace WebAPI.Infrastructure
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.AllowedForNewUsers = false;
 
-                options.SignIn.RequireConfirmedAccount = false;
+                options.SignIn.RequireConfirmedAccount = true;
                 options.SignIn.RequireConfirmedPhoneNumber = false;
 
 
@@ -180,6 +182,17 @@ namespace WebAPI.Infrastructure
 
             services.AddValidatorsFromAssembly(assembly,includeInternalTypes:true);
 
+
+            return services;
+        }
+
+        public static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration) { 
+
+            services.Configure<EmailSettings>(configuration.GetSection("EmailSettings"));
+            services.Configure<EmailTemplateSettings>(configuration.GetSection("EmailTemplates"));
+
+
+            services.AddTransient<IEmailSender<User>, EmailSender>();
 
             return services;
         }
