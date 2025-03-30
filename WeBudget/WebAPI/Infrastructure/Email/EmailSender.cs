@@ -57,7 +57,9 @@ namespace WebAPI.Infrastructure.Email
 
         public Task SendPasswordResetCodeAsync(User user, string email, string resetCode)
         {
-            return Task.CompletedTask;
+            string body = _resetPasswordTemplate.Replace("{{resetLink}}", _emailTemplateSettings.ResetPassword.ClientUrl + $"?code={resetCode}");
+
+            return SendEmailAsync(email, _emailTemplateSettings.ResetPassword.Subject, body);
         }
 
         public Task SendPasswordResetLinkAsync(User user, string email, string resetLink)

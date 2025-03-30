@@ -25,6 +25,8 @@ namespace WebAPI.Presentation.Endpoints
                     confirmEmailEndpointName = $"{nameof(MapUsers)}-{finalPattern}";
                     endpointBuilder.Metadata.Add(new EndpointNameMetadata(confirmEmailEndpointName));
                 });
+            routes.MapPost("/forgot-password", ForgotPassword).WithDescription("Forgot password");
+            routes.MapPost("/reset-password", ResetPassword).WithDescription("Reset password");
             return routes;
         }
 
@@ -93,6 +95,26 @@ namespace WebAPI.Presentation.Endpoints
                 return TypedResults.Redirect(emailTemplateSettings.ConfirmAccount.ClientUrl);
             }
 
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> ForgotPassword([FromServices] ISender sender, [FromBody] ForgotPasswordCommand request)
+        {
+            var result = await sender.Send(request);
+            if (result.IsFailure)
+            {
+                return ProblemDetailsHelper.HandleFailure(result);
+            }
+            return Results.Ok();
+        }
+
+        public static async Task<IResult> ResetPassword([FromServices] ISender sender, [FromBody] ResetPasswordCommand request)
+        {
+            var result = await sender.Send(request);
+            if (result.IsFailure)
+            {
+                return ProblemDetailsHelper.HandleFailure(result);
+            }
             return Results.Ok();
         }
     }
