@@ -1,8 +1,11 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.WebUtilities;
+using System.Text;
 using WebAPI.Domain.Users;
 using WebAPI.Shared.Abstractions;
 using WebAPI.Shared.Errors;
+using static Org.BouncyCastle.Crypto.Engines.SM2Engine;
 
 namespace WebAPI.Application.Users
 {
@@ -21,6 +24,15 @@ namespace WebAPI.Application.Users
         {
 
             UserManager<User> userManager = _serviceProvider.GetRequiredService<UserManager<User>>();
+            LinkGenerator linkGenerator = _serviceProvider.GetRequiredService<LinkGenerator>();
+            IHttpContextAccessor httpContextAccessor = _serviceProvider.GetRequiredService<IHttpContextAccessor>();
+            HttpContext? httpContext = httpContextAccessor.HttpContext;
+
+            if(httpContext is null)
+            {
+                _logger.LogError("HttpContext is null");
+                return UserErrors.HttpContextIsNull;
+            }
 
             User? userExists = await userManager.FindByEmailAsync(request.Email);
 
@@ -62,7 +74,30 @@ namespace WebAPI.Application.Users
 
             string token = await userManager.GenerateEmailConfirmationTokenAsync(userStored);
 
-            string confirmationLink = $"https://localhost:7112/confirm-email?email={request.Email}&token={token}";
+            string encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+            var routeValues = new RouteValueDictionary()
+            {
+                ["email"] = request.Email,
+                ["token"] = encodedToken,
+            };
+
+            if(request.ConfirmationLink is null)
+            {
+                _logger.LogError("Confirmation link is null.");
+                errors.Add(UserErrors.ConfirmationLinkIsNull);
+                return errors;
+            }
+
+
+            string? confirmationLink = linkGenerator.GetUriByName(httpContext, request.ConfirmationLink, routeValues);
+
+            if(confirmationLink is null)
+            {
+                _logger.LogError("Confirmation link is null.");
+                errors.Add(UserErrors.ConfirmationLinkIsNull);
+                return errors;
+            }
 
             IEmailSender<User> emailSender = _serviceProvider.GetRequiredService<IEmailSender<User>>();
 

@@ -14,5 +14,7 @@ namespace WebAPI.Application.Users
 
         [Required]
         public string Password { get; init; } = string.Empty;
+
+        public string? ConfirmationLink { get; set; } = string.Empty;
     }
 }

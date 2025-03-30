@@ -39,6 +39,8 @@ namespace WebAPI.Infrastructure
                 .AddInteractionService()
                 .AddEmailService(configuration);
 
+            services.AddHttpContextAccessor();
+
 
             services.AddScoped<ITokenGenerator, TokenGenerator>();
             services.AddScoped<IUsersRepository, UsersRepository>();
